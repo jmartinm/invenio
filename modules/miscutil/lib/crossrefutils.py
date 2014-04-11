@@ -21,7 +21,7 @@
 
 import urllib
 import urllib2
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse, parseString
 from time import sleep
 
 from invenio.config import (CFG_ETCDIR,
@@ -85,6 +85,45 @@ def get_marcxml_for_doi(doi):
     output = convert(xmltext=content, \
                      template_filename=xsl_crossref2marc_config)
     return output
+
+
+def get_marcxml_for_pica_id(pica_id):
+    """
+    """
+    # Getting the data from external source
+    url = "http://sru.gbv.de/gvk?query=pica.ppn%3D" + pica_id + \
+    "&version=1.1&operation=searchRetrieve&maximumRecords=15&sortKeys=year,,1"
+
+    request = urllib2.Request(url)
+    response = urllib2.urlopen(request)
+    xml = response.read()
+
+    document = parseString(xml)
+
+    records = document.getElementsByTagName("record")
+    if records:
+        record = records[0]
+        return record.toxml()
+
+
+def get_records_from_isbn(isbn):
+    """
+    """
+    isbn = isbn.strip()
+
+    # Getting the data from external source
+    url = "http://sru.gbv.de/gvk?query=pica.isb%3D" + isbn + \
+    "&version=1.1&operation=searchRetrieve&maximumRecords=15&sortKeys=year,,1"
+
+    request = urllib2.Request(url)
+    response = urllib2.urlopen(request)
+    xml = response.read()
+
+    document = parseString(xml)
+
+    records = document.getElementsByTagName("record")
+    if records:
+        return records
 
 
 def get_doi_for_records(records):

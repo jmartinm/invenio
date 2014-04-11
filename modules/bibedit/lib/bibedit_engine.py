@@ -479,6 +479,9 @@ def _perform_request_ajax(req, recid, uid, data, isBulk=False):
         response.update({"cacheMTime": data['cacheMTime']})
     elif request_type == "guessAffiliations":
         response.update(perform_guess_affiliations(uid, data))
+    elif request_type == "checkISBN":
+        response.update(perform_check_isbn(uid, data))
+
 
     return response
 
@@ -637,6 +640,30 @@ def perform_request_record(req, request_type, recid, uid, data, ln=CFG_SITE_LANG
                         create_cache(new_recid, uid, record, True)
                         response['cacheMTime'] = get_cache_mtime(new_recid, uid)
                         response['resultCode'], response['newRecID'] = 7, new_recid
+        elif new_type == 'isbn':
+            from invenio.crossrefutils import get_marcxml_for_isbn
+            # Import data from external source, using DOI
+            isbn = data['isbn']
+            if not isbn:
+                response['resultCode'] = CFG_BIBEDIT_AJAX_RESULT_CODES_REV['error_no_doi_specified']
+            else:
+                marcxml = get_marcxml_for_isbn(isbn)
+                if not marcxml:
+                    response['resultCode'] = CFG_BIBEDIT_AJAX_RESULT_CODES_REV['error_isbn_not_found']
+                else:
+                    record = create_record(marcxml)[0]
+                    record_strip_controlfields(record)
+                    record_add_field(record, '001',
+                                     controlfield_value=str(new_recid))
+                    template_to_merge = extend_record_with_template(recstruct=record)
+                    if template_to_merge:
+                        merged_record = merge_record_with_template(record, template_to_merge)
+                        if merged_record:
+                            record = merged_record
+
+                    create_cache(new_recid, uid, record, True)
+                    response['cacheMTime'] = get_cache_mtime(new_recid, uid)
+                    response['resultCode'], response['newRecID'] = 7, new_recid
         elif new_type == 'clone':
             # Clone an existing record (from the users cache).
             existing_cache = cache_exists(recid, uid)
@@ -1820,6 +1847,23 @@ def perform_guess_affiliations(uid, data):
     response['subfieldsToAdd'] = result
 
     return response
+
+
+def perform_check_isbn(uid, data):
+    response = {}
+    records = get_records_from_isbn(data["isbn"])
+    records_info = []
+    for record in records:
+        recstruct = create_record(record)[0]
+        info = {}
+        info["title"] = record_get_field_value(recstruct, "245", "0", "0", "a")
+        info["type"] = record_get_field_value(recstruct, "245", "0", "0", "h")
+        external_ids = record_get_field_values(recstruct, "035")
+        info["link"] = "No link available"
+        for id in external_ids:
+            match = re.match("<number>")
+    # if len(records) > 2:
+
 
 
 def perform_request_submit(recid, uid, data, response):

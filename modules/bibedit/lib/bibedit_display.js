@@ -1062,6 +1062,12 @@ function displayNewRecordScreen() {
     '<a href="#" id="lnkNewTemplateRecordImport_crossref"><b>Crossref</b></a></td>' +
     '<td style="padding-left: 10px; padding-right: 10px;">' +
     '<td><input id="doi_crossref" style="width:200px" type="text" placeholder="Input the DOI of the publication" /><div style="display:inline;" id="doi_crossref_help"></div></td></tr>' +
+    '<tr style="border-width: 1px;">' +
+    '<td style="padding-left: 10px; padding-right: 10px;">' +
+    '<a href="#" id="lnkNewTemplateRecordImport_isbn"><b>ISBN</b></a></td>' +
+    '<td style="padding-left: 10px; padding-right: 10px;">' +
+    '<td><input id="isbn_input" style="width:200px" type="text" placeholder="Input the ISBN of the book" /><div style="display:inline;" id="isbn_help"></div></td></tr>' +
+    
     '</table></li>';
   $('#bibEditContentTable').html(msg);
 }

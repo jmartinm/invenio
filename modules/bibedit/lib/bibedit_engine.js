@@ -2392,6 +2392,35 @@ function bindNewRecordHandlers(){
   $('#doi_crossref').one('input propertychange', function (e) {
     $('#doi_crossref_help').html("<span class='help-text'>&nbsp;Press 'Enter' key to import</span>");
   });
+
+  // binding import function for ISBN
+  $('#lnkNewTemplateRecordImport_isbn').bind('click', function(event){
+      var isbnElement = $("#isbn_input");
+      if (!isbnElement.val()) {
+        // if no ISBN specified
+        errorIsbn(117)
+      } else {
+        updateStatus('updating');
+        createReq({requestType: 'newRecord', newType: 'isbn', isbn: isbnElement.val()},function(json){
+        if (json['resultCode'] == 7) {
+          getRecord(json['newRecID'], 0, onGetTemplateSuccess); // recRev = 0 -> current revision
+        } else {
+          errorIsbn(json['resultCode']);
+          updateStatus('error', 'Error !');
+        }
+        }, false);
+      }
+      event.preventDefault();
+    });
+  // bind enter key with "crossref" link clicked
+  $('#isbn_input').bind('keyup', function (e){
+    if (e.which == 13){
+      $('#lnkNewTemplateRecordImport_isbn').click();
+    }
+  });
+  $('#isbn_input').one('input propertychange', function (e) {
+    $('#isbn_help').html("<span class='help-text'>&nbsp;Press 'Enter' key to import</span>");
+  });
 }
 
 function errorDoi(code){
@@ -2417,6 +2446,25 @@ function errorDoi(code){
   }
   var warning = '<span class="doiWarning" style="padding-left: 5px; color: #ff0000;">' + msg + '</span>'
   $("#doi_crossref_help").empty().html(warning);
+}
+
+function errorIsbn(code){
+  /*
+  * Displays a warning message in the import from isbn textbox
+  */
+  var msg;
+  switch(code) {
+    case 117:
+      msg = "Please input the ISBN";
+      break;
+    case 128:
+      msg = "ISBN was not found";
+      break;
+    default:
+      msg = "Error while importing data";
+  }
+  var warning = '<span class="doiWarning" style="padding-left: 5px; color: #ff0000;">' + msg + '</span>'
+  $("#isbn_help").empty().html(warning);
 }
 
 
