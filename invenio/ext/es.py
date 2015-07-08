@@ -37,12 +37,16 @@ SEARCH_RECORD_MAPPING = {
                     "type": "asciifolding",
                     "preserve_original": True
                 },
-
                 "synonyms_kbr": {
                     "type": "synonym",
                     "synonyms": [
                         "production => creation"
                     ]
+                },
+                "autocomplete_filter": {
+                    "type":     "edge_ngram",
+                    "min_gram": 1,
+                    "max_gram": 20
                 }
             },
             "analyzer": {
@@ -61,6 +65,14 @@ SEARCH_RECORD_MAPPING = {
                     "filter": [
                         "asciifold_with_orig",
                         "lowercase"
+                    ]
+                },
+                "autocomplete": {
+                    "type":      "custom",
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "autocomplete_filter"
                     ]
                 }
             }
@@ -153,6 +165,16 @@ SEARCH_RECORD_MAPPING = {
                         }
                     }
                 },
+                "affautocomplete": {
+                    "type": "string",
+                    "fields": {
+                        "affiliation": {
+                            "type": "string",
+                            "index_analyzer":  "autocomplete",
+                            "search_analyzer": "standard"
+                        }
+                    }
+                },
                 "authors": {
                     "type": "object",
                     "properties": {
@@ -180,9 +202,15 @@ SEARCH_RECORD_MAPPING = {
                     "type": "date",
                     "format": "yyyy||yyyyMM||yyyyMMdd||yyyyMMddHHmmss||yyyyMMddHHmmss.S||dd MM yyyy||dd MMM yyyy||MMM yyyy||MMM yyyy?||yyyy ('repr'.1964.)",
                 },
-                "date": {
-                    "type": "date",
-                    "format": "yyyy||yyyy-MM||yyyy-MM-dd"
+                "institution": {
+                    "type": "object",
+                    "properties": {
+                        "affiliation": {
+                            "type": "string",
+                            "copy_to": ["affautocomplete"],
+                            "analyzer": "natural_text"
+                        }
+                    }
                 },
                 "publication_info": {
                     "type": "object",
