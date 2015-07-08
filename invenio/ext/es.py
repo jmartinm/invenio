@@ -141,22 +141,20 @@ SEARCH_RECORD_MAPPING = {
                     "type": "date",
                     "format": "yyyy||yyyyMM||yyyyMMdd||yyyyMMddHHmmss||yyyyMMddHHmmss.S||dd MM yyyy||dd MMM yyyy||MMM yyyy||MMM yyyy?||yyyy ('repr'.1964.)",
                 },
-                "publication_distribution_imprint": {
+                "date": {
+                    "type": "date",
+                    "format": "yyyy||yyyy-MM||yyyy-MM-dd"
+                },
+                "publication_info": {
                     "type": "object",
                     "properties": {
-                        "date_of_publication_distribution": {
+                        "journal_volume": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "year": {
                             "type": "date",
-                            "format": "yyyy||yyyyMM||yyyyMMdd||yyyyMMddHHmmss||yyyyMMddHHmmss.S||dd MM yyyy||dd MMM yyyy||MMM yyyy||MMM yyyy?||yyyy ('repr'.1964.)",
-                            "copy_to": ["publication_date"]
-                        },
-                        "name_of_publisher_distributor": {
-                            "type": "string",
-                            "analyzer": "basic_analyzer"
-
-                        },
-                        "place_of_publication_distribution": {
-                            "type": "string",
-                            "analyzer": "basic_analyzer"
+                            "format": "yyyy"
                         }
                     }
                 }
