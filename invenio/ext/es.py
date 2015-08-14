@@ -42,11 +42,6 @@ SEARCH_RECORD_MAPPING = {
                     "synonyms": [
                         "production => creation"
                     ]
-                },
-                "autocomplete_filter": {
-                    "type":     "edge_ngram",
-                    "min_gram": 1,
-                    "max_gram": 20
                 }
             },
             "analyzer": {
@@ -67,14 +62,6 @@ SEARCH_RECORD_MAPPING = {
                         "lowercase"
                     ]
                 },
-                "autocomplete": {
-                    "type":      "custom",
-                    "tokenizer": "standard",
-                    "filter": [
-                        "lowercase",
-                        "autocomplete_filter"
-                    ]
-                }
             }
         },
         "index.percolator.map_unmapped_fields_as_string": True,
@@ -126,6 +113,13 @@ SEARCH_RECORD_MAPPING = {
                         }
                     }
                 },
+                "experimentautocomplete": {
+                    "type": "string"
+                },
+                "experiment_name": {
+                    "type": "string",
+                    "copy_to": ["experimentautocomplete"],
+                },
                 "report_number": {
                     "type": "object",
                     "properties": {
@@ -166,14 +160,7 @@ SEARCH_RECORD_MAPPING = {
                     }
                 },
                 "affautocomplete": {
-                    "type": "string",
-                    "fields": {
-                        "affiliation": {
-                            "type": "string",
-                            "index_analyzer":  "autocomplete",
-                            "search_analyzer": "standard"
-                        }
-                    }
+                    "type": "string"
                 },
                 "authors": {
                     "type": "object",
@@ -191,9 +178,6 @@ SEARCH_RECORD_MAPPING = {
                 "division": {
                     "type": "string"
                 },
-                "experiment": {
-                    "type": "string"
-                },
                 "date_and_time_of_latest_transaction": {
                     "type": "date",
                     "format": "yyyy||yyyyMM||yyyyMMdd||yyyyMMddHHmmss||yyyyMMddHHmmss.S",
@@ -207,8 +191,7 @@ SEARCH_RECORD_MAPPING = {
                     "properties": {
                         "affiliation": {
                             "type": "string",
-                            "copy_to": ["affautocomplete"],
-                            "analyzer": "natural_text"
+                            "copy_to": ["affautocomplete"]
                         }
                     }
                 },
